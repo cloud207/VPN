@@ -1,1 +1,172 @@
-dm1lc3M6Ly9leUpoWkdRaU9pSmpiRzkxWkM1aWJIVmxiMk5sWVc1NExtOXlaeUlzSW1GcFpDSTZJakFpTENKaGJIQnVJam9pYUhSMGNDOHhMakVpTENKbWNDSTZJbU5vY205dFpTSXNJbWh2YzNRaU9pSWlMQ0pwWkNJNklqUmpPR1V5TUdVNUxUTTFNVFV0TkdVeVlTMWlaVE5pTFRZMU5qUm1ZelV4WXpGak1pSXNJbTVsZENJNkluZHpJaXdpY0dGMGFDSTZJaTlvWld4c2J5SXNJbkJ2Y25RaU9pSTBORE1pTENKd2N5STZJbE5wYm1kaGNHOXlaU0lzSW5OamVTSTZJbUYxZEc4aUxDSnpibWtpT2lJaUxDSjBiSE1pT2lKMGJITWlMQ0owZVhCbElqb2lJaXdpZGlJNklqSWlmUT09
+{
+  "dns": {
+    "hosts": {
+      "domain:googleapis.cn": "googleapis.com"
+    },
+    "servers": [
+      "1.1.1.1",
+      {
+        "address": "223.5.5.5",
+        "domains": [
+          "geosite:cn",
+          "geosite:geolocation-cn"
+        ],
+        "expectIPs": [
+          "geoip:cn"
+        ],
+        "port": 53
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": true,
+        "routeOnly": false
+      },
+      "tag": "socks"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "tag": "http"
+    }
+  ],
+  "log": {
+    "loglevel": "warning"
+  },
+  "outbounds": [
+    {
+      "mux": {
+        "concurrency": -1,
+        "enabled": false,
+        "xudpConcurrency": 8,
+        "xudpProxyUDP443": ""
+      },
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "cloud.blueoceanx.org",
+            "port": 443,
+            "users": [
+              {
+                "alterId": 0,
+                "encryption": "",
+                "flow": "",
+                "id": "4c8e20e9-3515-4e2a-be3b-6564fc51c1c2",
+                "level": 8,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "alpn": [
+            "http/1.1"
+          ],
+          "fingerprint": "chrome",
+          "serverName": "",
+          "show": false
+        },
+        "wsSettings": {
+          "headers": {
+            "Host": ""
+          },
+          "path": "/hello"
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {},
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
+    }
+  ],
+  "remarks": "Singapore",
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "ip": [
+          "1.1.1.1"
+        ],
+        "outboundTag": "proxy",
+        "port": "53"
+      },
+      {
+        "ip": [
+          "223.5.5.5"
+        ],
+        "outboundTag": "direct",
+        "port": "53"
+      },
+      {
+        "domain": [
+          "domain:googleapis.cn",
+          "domain:gstatic.com"
+        ],
+        "outboundTag": "proxy"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "ip": [
+          "geoip:cn"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:cn"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "domain": [
+          "geosite:geolocation-cn"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "outboundTag": "proxy",
+        "port": "0-65535"
+      }
+    ]
+  }
+}
